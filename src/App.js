@@ -1,24 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import data from "./data.json";
+import React, { useEffect } from "react";
+import Chart from "react-google-charts";
 
 function App() {
+  let dataList = [["Region", "$ Usage"]];
+
+  useEffect(() => {
+    data.map((item) => {
+      dataList.push([item.region, item.data]);
+    });
+  }, []);
+
+  console.log(dataList);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <h3 style={{ textAlign: "center" }}>Network available in regions</h3>
+      <Chart
+        chartEvents={[
+          {
+            eventName: "select",
+            callback: ({ chartWrapper }) => {
+              const chart = chartWrapper.getChart();
+              const selection = chart.getSelection();
+              if (selection.length === 0) return;
+              const region = data[selection[0].row + 1];
+              console.log("Selected : " + region);
+            },
+          },
+        ]}
+        chartType="GeoChart"
+        width="100%"
+        height="650px"
+        data={dataList}
+        options={{
+          colorAxis: { colors: ["#99cdde", "#1c54a3", "#1b2580", "#4511b8"] },
+          backgroundColor: "#f7f2fc",
+          datalessRegionColor: "#f3ebfc",
+          defaultColor: "#f5f5f5",
+        }}
+      />
+    </>
   );
 }
 
